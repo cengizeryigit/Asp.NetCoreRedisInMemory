@@ -6,35 +6,28 @@ namespace InMemoryApp.Web.Controllers
 	public class ProductController : Controller
 	{
 		private IMemoryCache _memoryCache;
-        public ProductController(IMemoryCache memoryCache)
-        {
-            _memoryCache = memoryCache;
-        }
-        public IActionResult Index()
+		public ProductController(IMemoryCache memoryCache)
 		{
-			//1.Yol
-			if (String.IsNullOrEmpty(_memoryCache.Get<string>("zaman")))
-			{
-				_memoryCache.Set<string>("zaman", DateTime.Now.ToString());
-			}
+			_memoryCache = memoryCache;
+		}
+		public IActionResult Index()
+		{
 
-			//2.yol
-			if(!_memoryCache.TryGetValue("zaman",out string zamancache))
-			{
-				_memoryCache.Set<string>("zaman", DateTime.Now.ToString());
-			}
+			MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
+			options.AbsoluteExpiration = DateTime.Now.AddMinutes(5);
+			options.SlidingExpiration = TimeSpan.FromMinutes(1);
+
+			_memoryCache.Set<string>("zaman", DateTime.Now.ToString(), options);
 
 			return View();
 		}
 
 		public IActionResult Show()
 		{
-			_memoryCache.GetOrCreate<string>("zaman", entry =>
-			{
-				return DateTime.Now.ToString();
-			});
+			_memoryCache.TryGetValue("zaman", out string zamancache);
 
-			ViewBag.zaman = _memoryCache.Get<string>("zaman");
+			ViewBag.zaman = zamancache;
+
 			return View();
 		}
 	}
