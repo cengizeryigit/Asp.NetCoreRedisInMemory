@@ -13,12 +13,11 @@ namespace RedisExampleApp.API.Controllers
 	{
 		private readonly IProductRepository _productRepository;
 		private readonly IDatabase _database;
-		public ProductsController(IProductRepository productRepository,IDatabase database)
+		
+		public ProductsController(IProductRepository productRepository)
 		{
 			_productRepository = productRepository;
-			_database = database;
 
-			_database.StringSet("soyad", "yildiz");
 		}
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
